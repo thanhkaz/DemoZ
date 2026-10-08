@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thống Kê Đội Tuyển Quốc Gia Việt Nam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-red-700 via-red-600 to-red-800 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center text-red-700 shadow-md">
+          <i class="fa-solid fa-trophy text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-black uppercase tracking-wide flex items-center gap-2">
+            Đội Tuyển Quốc Gia Việt Nam
+          </h1>
+          <p class="text-xs text-red-100 font-medium">Thống Kê Thông Số Cầu Thủ & Lịch Sử Trận Đấu Giai Đoạn 2002-2026</p>
+        </div>
+      </div>
+      
+      <!-- Ô tìm kiếm cầu thủ -->
+      <div class="relative w-full md:w-80">
+        <input type="text" id="searchInput" oninput="filterPlayers()" placeholder="Tìm tên cầu thủ..." 
+               class="w-full pl-10 pr-4 py-2.5 rounded-xl text-slate-800 bg-white shadow-inner focus:outline-none focus:ring-2 focus:ring-yellow-400 text-sm font-medium">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 mt-6 space-y-10">
+
+    <!-- Card Tổng Quan Stat -->
+    <div class="grid grid-cols-3 gap-4 bg-gradient-to-r from-red-800 to-red-600 text-white p-5 rounded-2xl shadow-md text-center">
+      <div>
+        <div id="statTotalPlayers" class="text-2xl md:text-3xl font-black text-yellow-300">55</div>
+        <div class="text-[11px] md:text-xs opacity-90 uppercase font-bold tracking-wider mt-1">Cầu Thủ</div>
+      </div>
+      <div class="border-x border-red-500/50">
+        <div id="statTotalGoals" class="text-2xl md:text-3xl font-black text-yellow-300">0</div>
+        <div class="text-[11px] md:text-xs opacity-90 uppercase font-bold tracking-wider mt-1">Tổng Bàn Thắng</div>
+      </div>
+      <div>
+        <div id="statTotalAssists" class="text-2xl md:text-3xl font-black text-yellow-300">0</div>
+        <div class="text-[11px] md:text-xs opacity-90 uppercase font-bold tracking-wider mt-1">Tổng Kiến Tạo</div>
+      </div>
+    </div>
+
+    <!-- PHẦN 1: 4 BẢNG XẾP HẠNG TOP 10 -->
+    <section>
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-chart-line text-red-600"></i> Các Bảng Xếp Hạng Top 10
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+        <!-- CARD 1: TOP 10 TỔNG G+A -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-red-700 to-red-600 text-white p-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-star text-yellow-300"></i>
+              <h3 class="font-bold text-sm">1. Top 10 Tổng (G + A)</h3>
+            </div>
+            <span class="text-[10px] bg-red-800 text-yellow-300 px-2 py-0.5 rounded-full font-bold">G + A</span>
+          </div>
+          <div class="p-3 flex-1 custom-scrollbar overflow-y-auto max-h-[380px]">
+            <table class="w-full text-xs text-left">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-100 pb-1">
+                  <th class="py-1 w-7">#</th>
+                  <th>Cầu thủ</th>
+                  <th class="text-center">G</th>
+                  <th class="text-center">A</th>
+                  <th class="text-center">Trận</th>
+                  <th class="text-right font-bold text-red-600">Tổng</th>
+                </tr>
+              </thead>
+              <tbody id="topCombinedBody" class="divide-y divide-slate-50"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CARD 2: TOP 10 GHI BÀN & KIẾN TẠO -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white p-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-down-wide-short text-emerald-200"></i>
+              <h3 class="font-bold text-sm">2. Ghi Bàn & Kiến Tạo</h3>
+            </div>
+            <span class="text-[10px] bg-emerald-800 text-emerald-200 px-2 py-0.5 rounded-full font-bold">G &gt; A &gt; Trận</span>
+          </div>
+          <div class="p-3 flex-1 custom-scrollbar overflow-y-auto max-h-[380px]">
+            <table class="w-full text-xs text-left">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-100 pb-1">
+                  <th class="py-1 w-7">#</th>
+                  <th>Cầu thủ</th>
+                  <th class="text-center font-bold text-emerald-600">G</th>
+                  <th class="text-center">A</th>
+                  <th class="text-right">Trận</th>
+                </tr>
+              </thead>
+              <tbody id="topRankedBody" class="divide-y divide-slate-50"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CARD 3: TOP 10 KIẾN TẠO -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-blue-700 to-blue-600 text-white p-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-handshake text-blue-200"></i>
+              <h3 class="font-bold text-sm">3. Top 10 Kiến Tạo (A)</h3>
+            </div>
+            <span class="text-[10px] bg-blue-800 text-blue-200 px-2 py-0.5 rounded-full font-bold">Kiến Tạo</span>
+          </div>
+          <div class="p-3 flex-1 custom-scrollbar overflow-y-auto max-h-[380px]">
+            <table class="w-full text-xs text-left">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-100 pb-1">
+                  <th class="py-1 w-7">#</th>
+                  <th>Cầu thủ</th>
+                  <th class="text-center font-bold text-blue-600">A</th>
+                  <th class="text-right">Trận</th>
+                </tr>
+              </thead>
+              <tbody id="topAssistsBody" class="divide-y divide-slate-50"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- CARD 4: TOP 10 SỐ TRẬN RA SÂN -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-purple-700 to-purple-600 text-white p-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-shirt text-purple-200"></i>
+              <h3 class="font-bold text-sm">4. Top 10 Số Trận</h3>
+            </div>
+            <span class="text-[10px] bg-purple-800 text-purple-200 px-2 py-0.5 rounded-full font-bold">Ra Sân</span>
+          </div>
+          <div class="p-3 flex-1 custom-scrollbar overflow-y-auto max-h-[380px]">
+            <table class="w-full text-xs text-left">
+              <thead>
+                <tr class="text-slate-400 border-b border-slate-100 pb-1">
+                  <th class="py-1 w-7">#</th>
+                  <th>Cầu thủ</th>
+                  <th class="text-center font-bold text-purple-600">Trận</th>
+                  <th class="text-center">G</th>
+                  <th class="text-right">A</th>
+                </tr>
+              </thead>
+              <tbody id="topMatchesBody" class="divide-y divide-slate-50"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PHẦN 2: BẢNG DANH SÁCH TẤT CẢ 46 CẦU THỦ (CÓ SẮP XẾP CỘT) -->
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-users text-red-600"></i> 5. Bảng Dữ Liệu Tất Cả 55 Cầu Thủ
+          </h2>
+          <p class="text-xs text-slate-500 italic mt-0.5">*Bấm vào tiêu đề tiêu đề các cột để sắp xếp Tăng / Giảm</p>
+        </div>
+        <span class="text-xs font-semibold bg-red-100 text-red-700 px-3 py-1 rounded-full">
+          Hiển thị: <span id="displayCount">55</span> / 55 Cầu thủ
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 text-slate-600 text-xs uppercase font-bold">
+              <th class="py-3 px-4 rounded-l-lg text-center w-12">STT</th>
+              <th class="py-3 px-4 cursor-pointer hover:bg-slate-200 transition-colors select-none" onclick="sortTable('name')">
+                Tên Cầu Thủ <i id="sort-icon-name" class="fa-solid fa-sort ml-1 text-slate-400"></i>
+              </th>
+              <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition-colors select-none" onclick="sortTable('g')">
+                Bàn Thắng (G) <i id="sort-icon-g" class="fa-solid fa-sort ml-1 text-slate-400"></i>
+              </th>
+              <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition-colors select-none" onclick="sortTable('a')">
+                Kiến Tạo (A) <i id="sort-icon-a" class="fa-solid fa-sort ml-1 text-slate-400"></i>
+              </th>
+              <th class="py-3 px-4 text-center cursor-pointer hover:bg-slate-200 transition-colors select-none" onclick="sortTable('m')">
+                Số Trận <i id="sort-icon-m" class="fa-solid fa-sort ml-1 text-slate-400"></i>
+              </th>
+              <th class="py-3 px-4 text-center font-black text-red-600 rounded-r-lg cursor-pointer hover:bg-slate-200 transition-colors select-none" onclick="sortTable('total')">
+                Tổng G + A <i id="sort-icon-total" class="fa-solid fa-sort ml-1 text-slate-400"></i>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="fullListBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PHẦN 3: DANH SÁCH TRẬN ĐẤU -->
+    <section class="bg-slate-100/70 p-5 md:p-6 rounded-3xl border border-slate-200/80 space-y-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Danh Sách Trận Đấu</h2>
+          <span id="matchCountBadge" class="bg-red-100 text-red-600 text-xs font-bold px-3 py-1 rounded-full border border-red-200">0 trận</span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+          <select id="tournamentSelect" onchange="filterMatches()" 
+                  class="w-full sm:w-56 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+            <option value="">Tất cả giải đấu</option>
+          </select>
+
+          <div class="relative w-full sm:w-64">
+            <input type="text" id="matchSearchInput" oninput="filterMatches()" placeholder="Tìm giải đấu, đối thủ..." 
+                   class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+          </div>
+        </div>
+      </div>
+
+      <div id="matchListContainer" class="space-y-4"></div>
+    </section>
+
+  </main>
+
+  <script>
+    // 1. Dữ liệu 50 cầu thủ (Giữ nguyên gốc từ mã cung cấp)
+    const rawData = [
+      { name: "Lê Công Vinh", g: 51, a: 11, m: 83 },
+      { name: "Lê Huỳnh Đức", g: 27, a: 6, m: 67 },
+      { name: "Phạm Văn Quyến", g: 7, a: 3, m: 17 },
+      { name: "Phan Văn Tài Em", g: 6, a: 4, m: 58 },
+      { name: "Nguyễn Tiến Linh", g: 26, a: 3, m: 63 },
+      { name: "Phạm Tuấn Hải", g: 10, a: 1, m: 39 },
+      { name: "Nguyễn Hồng Sơn", g: 18, a: 7, m: 53 },
+      { name: "Nguyễn Văn Quyết", g: 16, a: 12, m: 58 },
+      { name: "Nguyễn Quang Hải", g: 16, a: 11, m: 85 },
+      { name: "Phan Thanh Bình", g: 13, a: 2, m: 32 },
+      { name: "Nguyễn Xuân Son", g: 16, a: 2, m: 18 },
+      { name: "Nguyễn Trọng Hoàng", g: 12, a: 10, m: 73 },
+      { name: "Nguyễn Anh Đức", g: 12, a: 5, m: 36 },
+      { name: "Nguyễn Công Phượng", g: 12, a: 2, m: 56 },
+      { name: "Nguyễn Minh Phương", g: 11, a: 15, m: 70 },
+      { name: "Nguyễn Việt Thắng", g: 3, a: 5, m: 39 },
+      { name: "Nguyễn Vũ Phong", g: 7, a: 8, m: 48 },
+      { name: "Hải gà", g: 7, a: 3, m: 40 },
+      { name: "Nguyễn Văn Toàn", g: 8, a: 6, m: 66 },
+      { name: "Nguyễn Đình Bắc", g: 10, a: 5, m: 23 },
+      { name: "Phạm Thành Lương", g: 6, a: 15, m: 74 },
+      { name: "Quế Ngọc Hải", g: 6, a: 6, m: 79 },
+      { name: "Phan Văn Đức", g: 5, a: 3, m: 44 },
+      { name: "Nguyễn Văn Vĩ", g: 6, a: 1, m: 25 },
+      { name: "Nguyễn Hai Long", g: 8, a: 0, m: 26 },
+      { name: "Vũ Văn Thanh", g: 5, a: 1, m: 56 },
+      { name: "Hồ Tấn Tài", g: 4, a: 4, m: 30 },
+      { name: "Phạm Xuân Mạnh", g: 3, a: 3, m: 36 },
+      { name: "Đỗ Hoàng Hên", g: 3, a: 2, m: 11 },
+      { name: "Nguyễn Hoàng Đức", g: 3, a: 12, m: 66 },
+      { name: "Bùi Vĩ Hào", g: 2, a: 1, m: 10 },
+      { name: "Phạm Đức Huy", g: 2, a: 1, m: 14 },
+      { name: "Châu Ngọc Quang", g: 2, a: 0, m: 13 },
+      { name: "Đỗ Duy Mạnh", g: 2, a: 0, m: 72 },
+      { name: "Lương Xuân Trường", g: 1, a: 8, m: 41 },
+      { name: "Đỗ Hùng Dũng", g: 1, a: 8, m: 44 },
+      { name: "Đoàn Văn Hậu", g: 1, a: 4, m: 46 },
+      { name: "Nguyễn Tuấn Anh", g: 1, a: 3, m: 46 },
+      { name: "Trần Minh Vương", g: 1, a: 1, m: 7 },
+      { name: "Lê Tấn Tài", g: 3, a: 4, m: 62 },
+      { name: "Khuất Văn Khang", g: 1, a: 1, m: 21 },
+      { name: "Bùi Hoàng Việt Anh", g: 1, a: 1, m: 33 },
+      { name: "Bùi Tiến Dũng", g: 1, a: 1, m: 61 },
+      { name: "Trương Tiến Anh", g: 0, a: 7, m: 31},
+      { name: "Lê Phạm Thành Long", g: 0, a: 2, m: 25},
+      { name: "Nguyễn Tài Lộc", g: 0, a: 1, m: 9 },
+      { name: "Nguyễn Phong Hồng Duy", g: 0, a: 3, m: 35 },
+      { name: "Nguyễn Thanh Bình", g: 1, a: 2, m: 24 },
+      { name: "Huỳnh Quang Thanh", g: 4, a: 2, m: 47 },
+      { name: "Phan Tuấn Tài", g: 0, a: 3, m: 23 },
+      { name: "Đặng Phương Nam", g: 10, a: 3, m: 31 },
+      { name: "Võ Hoàng Bửu", g: 9, a: 2, m: 41 },
+      { name: "Văn Sỹ Hùng", g: 7, a: 1, m: 14 },
+      { name: "Vũ Công Tuyền", g: 9, a: 0, m: 9 },
+      { name: "Nguyễn Thành Chung", g: 0, a: 1, m: 43}
+    ];
+
+    // 2. Dữ liệu Cập nhật Đầy đủ Các Trận Đấu
+    const matchData = [
+      //Tiger Cup 2002
+      { tournament: "TIGER CUP 2002", match: "Việt Nam 9–2 Campuchia", events: [{ scorer: "Huỳnh Hồng Sơn" }, { scorer: "Trường Giang" }, { scorer: "Quốc Trung" }, { scorer: "Trường Giang", assist: "Văn Sỹ" }, { scorer: "Huỳnh Đức", assist: "Văn Quyến" }, { scorer: "Minh Phương", assist: "Huỳnh Đức" }, { scorer: "Huỳnh Đức", assist: "Văn Quyến" }, { scorer: "Xuân Thành" }, { scorer: "Văn Quyến", assist: "Huỳnh Đức" }] },
+{ tournament: "TIGER CUP 2002", match: "Việt Nam 4–1 Myanmar", events: [{ scorer: "Xuân Thành" }, { scorer: "Phương Nam", assist: "Trường Giang" }, { scorer: "Phương Nam", assist: "Tài Em" }, { scorer: "Huỳnh Đức", note: "P" }] },
+{ tournament: "TIGER CUP 2002", match: "Việt Nam 2–2 Indonesia", events: [{ scorer: "Tài Em" }, { scorer: "Huỳnh Đức", assist: "Xuân Thành" }] },
+{ tournament: "TIGER CUP 2002", match: "Việt Nam 2–1 Malaysia", events: [{ scorer: "Trường Giang", assist: "Minh Đức" }, { scorer: "Minh Phương", assist: "Huỳnh Đức" }] },
+      // Vòng loại Asian Cup 2004
+      { tournament: "VL Asian Cup 2004", match: "Việt Nam 1–0 Hàn Quốc", events: [{ scorer: "Văn Quyến", assist: "Tuấn Phong" }] },
+      { tournament: "VL Asian Cup 2004", match: "Việt Nam 5–0 Nepal", events: [{ scorer: "Văn Quyến", assist: "Văn Trương" }, { scorer: "Tuấn Phong", assist:"Văn Quyến"}, { scorer: "Văn Quyến", assist: "Minh Phương"}, { scorer: "Thanh Bình", assist:"Minh Phương"}, { scorer: "Thanh Bình"}] },
+      // Vòng loại World Cup 2006
+      { tournament: "VL WORLD CUP 2006", match: "Việt Nam 1–2 Hàn Quốc", events: [{ scorer: "Tài Em", assist: "Công Vinh" }] },
+
+      // LG Cup 2004
+      { tournament: "LG CUP 2004", match: "Việt Nam 5–0 Myanmar", events: [{ scorer: "Công Vinh", note: "P" }, { scorer: "Bảo Khanh" }, { scorer: "Minh Phương" }, { scorer: "Văn Quyến" }, { scorer: "Công Vinh", assist: "Minh Phương" }] },
+
+      // AFF Cup 2004
+      { tournament: "AFF CUP 2004", match: "Việt Nam 9–1 Campuchia", events: [{ scorer: "Bảo Khanh", assist: "Công Vinh" }, { scorer: "Bảo Khanh" }, { scorer: "Công Vinh" }, { scorer: "Công Vinh" }, { scorer: "Phản lưới nhà" }, { scorer: "Văn Thành" }, { scorer: "Huy Hoàng", assist: "Minh Phương" }, { scorer: "Văn Thành" }, { scorer: "Huỳnh Đức" }, { scorer: "Công Vinh", assist: "Thanh Bình" }] },
+      { tournament: "AFF CUP 2004", match: "Việt Nam 3–0 Lào", events: [{ scorer: "Công Vinh" }, { scorer: "Minh Phương" }, { scorer: "Bảo Khanh", assist: "Minh Phương" }] },
+
+      // King Cup 2006
+      { tournament: "KING CUP 2006", match: "Việt Nam 3–2 Singapore", events: [{ scorer: "Thanh Bình", assist: "Vũ Phong" }, { scorer: "Lê Tấn Tài", assist: "Công Vinh" }, { scorer: "Công Vinh", assist: "Anh Đức" }] },
+      { tournament: "KING CUP 2006", match: "Việt Nam 2-1 Kazakhstan", events: [{ scorer: "Hồng Minh"}, { scorer: "Công Vinh", assist: "Vũ Phong" }] },
+      // AFF Cup 2007
+      { tournament: "AFF Cup 2007", match: "Việt Nam 9-0 Lào", events: [{ scorer: "Công Vinh", assist: "Hồng Minh" }, { scorer: "Công Vinh", assist: "Hồng Minh" }, { scorer: "Thanh Bình", assist: "Minh Phương" }, { scorer: "Văn Biển", assist: "Hồng Minh" }, { scorer: "Công Vinh" }, { scorer: "Thanh Bình", note: "P" }, { scorer: "Thanh Bình" }, { scorer: "Thanh Bình" }, { scorer: "Văn Biển" }] },
+      // Giao hữu 2007
+      { tournament: "GIAO HỮU 2007", match: "Việt Nam 5–3 Bahrain", events: [{ scorer: "Công Vinh", assist: "Văn Nhiên" }, { scorer: "Công Vinh" }, { scorer: "Mai Tiến Thành" }, { scorer: "Thanh Bình" }, { scorer: "Anh Đức", assist: "Thanh Bình" }] },
+      // Asian Cup 2007
+      { tournament: "ASIAN CUP 2007", match: "Việt Nam 2–0 UAE", events: [{ scorer: "Quang Thanh", assist: "Minh Phương" }, { scorer: "Công Vinh", assist: "Minh Phương" }] },
+      { tournament: "ASIAN CUP 2007", match: "Việt Nam 1–1 Qatar", events: [{ scorer: "Thanh Bình", assist: "Công Vinh" }] },
+      // Giao hữu 2008
+      { tournament: "GIAO HỮU 2008", match: "Việt Nam 2–2 Thái Lan", events: [{ scorer: "Việt Thắng", assist: "Minh Phương" }, { scorer: "Minh Phương" }] },
+      { tournament: "GIAO HỮU 2008", match: "Việt Nam 2–2 Singapore", events: [{ scorer: "Công Vinh", note: "P"}, { scorer: "Tài Em", assist: "Hải Gà" }] },
+      // AFF Cup 2008
+      { tournament: "AFF CUP 2008", match: "Việt Nam 3–2 Malaysia", events: [{ scorer: "Thành Lương", assist: "Minh Phương" }, { scorer: "Vũ Phong" }, { scorer: "Vũ Phong", assist: "Việt Thắng" }] },
+      { tournament: "AFF CUP 2008", match: "Việt Nam 4–0 Lào", events: [{ scorer: "Việt Thắng", assist: "Vũ Phong" }, { scorer: "Thành Lương", assist: "Minh Phương" }, { scorer: "Quang Thanh", assist: "Minh Phương" }, { scorer: "Thanh Bình" }] },
+      { tournament: "AFF CUP 2008", match: "Việt Nam 1–0 Singapore", events: [{ scorer: "Hải Gà", assist: "Công Vinh" }] },
+      { tournament: "AFF CUP 2008", match: "Việt Nam 2–1 Thái Lan", events: [{ scorer: "Vũ Phong", assist: "Lê Tấn Tài" }, { scorer: "Công Vinh", assist: "Việt Thắng" }] },
+      { tournament: "AFF CUP 2008", match: "Việt Nam 1–1 Thái Lan", events: [{ scorer: "Công Vinh", assist: "Minh Phương" }] },
+
+      // Vòng Loại Asian Cup 2011
+      { tournament: "VL ASIAN CUP 2011", match: "Việt Nam 3–1 Li Băng", events: [{ scorer: "Minh Phương" }, { scorer: "Công Vinh", assist: "Việt Thắng" }, { scorer: "Vũ Phong", assist: "Việt Thắng" }] },
+      { tournament: "VL ASIAN CUP 2011", match: "Việt Nam 1–2 Trung Quốc", events: [{ scorer: "Công Vinh", note:"P" }] },
+      { tournament: "VL ASIAN CUP 2011", match: "Việt Nam 1–6 Trung Quốc", events: [{ scorer: "Vũ Phong", assist: "Việt Thắng" }] },
+      { tournament: "VL ASIAN CUP 2011", match: "Việt Nam 1–1 Li Băng", events: [{ scorer: "Thành Lương", assist: "Minh Phương" }] },
+
+      // Giao hữu 2009
+      { tournament: "GIAO HỮU 2009", match: "Việt Nam 1–0 Kuwait", events: [{ scorer: "Trọng Hoàng", assist: "Vũ Phong" }] },
+
+      // Cúp SJC 2009
+      { tournament: "CÚP SJC 2009", match: "Việt Nam 1–0 Turkmenistan", events: [{ scorer: "Hải Gà", assist: "Minh Phương" }] },
+      { tournament: "CÚP SJC 2009", match: "Việt Nam 2–2 Singapore", events: [{ scorer: "Hải Gà", assist: "Thành Lương" }, { scorer: "Như Thành" }] },
+
+      // AFF Cup 2010
+      { tournament: "AFF CUP 2010", match: "Việt Nam 7–1 Myanmar", events: [{ scorer: "Anh Đức" }, { scorer: "Minh Phương" }, { scorer: "Lê Tấn Tài", assist: "Thành Lương" }, { scorer: "Anh Đức", assist: "Vũ Phong" }, { scorer: "Trọng Hoàng", assist: "Anh Đức" }, { scorer: "Trọng Hoàng", assist: "Thành Trung" }, { scorer: "Vũ Phong", assist: "Việt Cường" }] },
+      { tournament: "AFF CUP 2010", match: "Việt Nam 1–0 Singapore", events: [{ scorer: "Vũ Phong", assist: "Thành Lương" }] },
+
+      // VL 1 World Cup 2014
+      { tournament: "VL 1 WORLD CUP 2014", match: "Việt Nam 6–0 Macao", events: [{ scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Công Vinh", note:"P"}, { scorer: "Thành Lương", assist: "Văn Quyết" }, { scorer: "Ngọc Thanh", assist: "Công Vinh" }, { scorer: "Văn Quyết" }] },
+      { tournament: "VL 1 WORLD CUP 2014", match: "Việt Nam 7–1 Macao", events: [{ scorer: "Quang Thanh", assist: "Văn Quyết" }, { scorer: "Hải Gà", assist: "Công Vinh" }, { scorer: "Công Vinh" }, { scorer: "Công Vinh" }, { scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Công Vinh", assist:" Hải Gà" }, { scorer: "Công Vinh", note: "P"}, { scorer: "Quang Thanh" }] },
+
+      // VL 2 World Cup 2014
+      { tournament: "VL 2 WORLD CUP 2014", match: "Việt Nam 2–1 Qatar", events: [{ scorer: "Trọng Hoàng" }, { scorer: "Hải Gà", assist: "Quang Thanh" }] },
+
+      // Giao hữu 2012
+      { tournament: "GIAO HỮU 2012", match: "Việt Nam 2–1 Hong Kong", events: [{ scorer: "Văn Quyết" }, { scorer: "Trọng Hoàng", assist: "Thành Lương" }] },
+      { tournament: "GIAO HỮU 2012", match: "Việt Nam 1–0 Malaysia", events: [{ scorer: "Trọng Hoàng", assist: "Vũ Phong" }] },
+      { tournament: "GIAO HỮU 2012", match: "Việt Nam 2–0 Malaysia", events: [{ scorer: "Công Vinh", assist: "Trọng Hoàng" }, { scorer: "Thanh Hưng", assist: "Quốc Anh" }] },
+      { tournament: "GIAO HỮU 2012", match: "Việt Nam 4–0 Lào", events: [{ scorer: "Hải Gà", assist: "Vũ Phong" }, { scorer: "Hải Gà" }, { scorer: "Trọng Hoàng", assist: "Quốc Anh" }, { scorer: "Quốc Anh", assist: "Hải Gà" }] },
+
+      // AFF Cup 2012
+      { tournament: "AFF CUP 2012", match: "Việt Nam 1–1 Myanmar", events: [{ scorer: "Lê Tấn Tài", assist: "Thành Lương" }] },
+
+      // VL Asian Cup 2015
+      { tournament: "VL ASIAN CUP 2015", match: "Việt Nam 1–2 UAE", events: [{ scorer: "Quốc Anh", assist: "Lê Tấn Tài" }] },
+      { tournament: "VL ASIAN CUP 2015", match: "Việt Nam 1–3 Uzbekistan", events: [{ scorer: "Trọng Hoàng" }] },
+      { tournament: "VL ASIAN CUP 2015", match: "Việt Nam 3–1 Hong Kong", events: [{ scorer: "Quốc Anh" }, { scorer: "Anh Đức", assist: "Văn Quyết" }, { scorer: "Trọng Hoàng", assist: "Văn Quyết" }] },
+
+      // Giao hữu 2013
+      { tournament: "GIAO HỮU 2013", match: "Việt Nam 2–1 Qatar", events: [{ scorer: "Trọng Hoàng" }, { scorer: "Trọng Hoàng", assist: "Anh Đức" }] },
+
+      // Giao hữu 2014
+      { tournament: "GIAO HỮU 2014", match: "Việt Nam 6–0 Myanmar", events: [{ scorer: "Hải Anh" }, { scorer: "Hải Anh", assist: "Công Vinh" }, { scorer: "Công Vinh", assist: "Minh Tuấn" }, { scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Văn Quyết", assist: "Vũ Phong" }] },
+
+      // AFF Cup 2014
+      { tournament: "AFF CUP 2014", match: "Việt Nam 3–0 Lào", events: [{ scorer: "Minh Tuấn", assist: "Lê Tấn Tài" }, { scorer: "Công Vinh" }, { scorer: "Huy Hùng", assist: "Văn Quyết" }] },
+      { tournament: "AFF CUP 2014", match: "Việt Nam 3–1 Philippines", events: [{ scorer: "Hoàng Thịnh", assist: "Công Vinh" }, { scorer: "Minh Tuấn", assist: "Hoàng Thịnh" }, { scorer: "Thành Lương", assist: "Văn Quyết" }] },
+      { tournament: "AFF CUP 2014", match: "Việt Nam 2–2 Indonesia", events: [{ scorer: "Ngọc Hải" }, { scorer: "Công Vinh" }] },
+      { tournament: "AFF CUP 2014", match: "Việt Nam 2–1 Malaysia", events: [{ scorer: "Huy Toàn" }, { scorer: "Văn Quyết", assist: "Hồng Quân" }] },
+      { tournament: "AFF CUP 2014", match: "Việt Nam 2–4 Malaysia", events: [{ scorer: "Công Vinh", note: "P" }, { scorer: "Công Vinh", assist: "Ngọc Hải" }] },
+
+      // Giao hữu 2015
+      { tournament: "GIAO HỮU 2015", match: "Việt Nam 1–1 Triều Tiên", events: [{ scorer: "Hồng Quân", assist: "Văn Quyết" }] },
+
+      // VL World Cup 2018
+      { tournament: "VL WORLD CUP 2018", match: "Việt Nam 1–1 Iraq", events: [{ scorer: "Công Vinh", assist: "Trọng Hoàng" }] },
+      { tournament: "VL WORLD CUP 2018", match: "Việt Nam 4–1 Đài Loan", events: [{ scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Văn Toàn", assist: "Đình Hoàng" }, { scorer: "Văn Toàn", assist: "Xuân Trường" }, { scorer: "Công Vinh", assist: "Xuân Trường" }] },
+      { tournament: "VL WORLD CUP 2018", match: "Việt Nam 2–1 Đài Loan", events: [{ scorer: "Tiến Thành" }, { scorer: "Phi Sơn", assist: "Công Vinh" }] },
+
+      // Giao hữu 2016
+      { tournament: "GIAO HỮU 2016", match: "Việt Nam 2–0 Syria", events: [{ scorer: "Công Vinh", assist: "Thành Lương" }, { scorer: "Văn Quyết", assist: "Xuân Trường" }] },
+
+      // AYA Cup
+      { tournament: "AYA CUP 2016", match: "Việt Nam 3–0 Singapore", events: [{ scorer: "Công Vinh", assist: "Văn Quyết" }, { scorer: "Văn Quyết" }, { scorer: "Thanh Trung", assist: "Văn Toàn" }] },
+      { tournament: "AYA CUP 2016", match: "Việt Nam 2–2 Đài Loan", events: [{ scorer: "Công Vinh", assist: "Văn Quyết" }, { scorer: "Công Vinh", assist: "Văn Toàn" }] },
+
+      // Giao hữu 2016 (tiếp)
+      { tournament: "GIAO HỮU 2016", match: "Việt Nam 2–2 Indonesia", events: [{ scorer: "Văn Thắng", assist:"Hoàng Thịnh" }, { scorer: "Minh Tuấn", assist: "Trọng Hoàng" }] },
+      { tournament: "GIAO HỮU 2016", match: "Việt Nam 3–2 Indonesia", events: [{ scorer: "Công Vinh", assist: "Thanh Trung" }, { scorer: "Công Phượng", assist: "Thành Lương" }, { scorer: "Văn Toàn", assist: "Hải Quế" }] },
+      { tournament: "GIAO HỮU 2016", match: "Việt Nam 5–2 Triều Tiên", events: [{ scorer: "Tuấn Anh", assist: "Công Vinh" }, { scorer: "Công Vinh", assist: "Văn Toàn" }, { scorer: "Văn Thanh", assist: "Xuân Trường" }, { scorer: "Xuân Trường" }, { scorer: "Thành Lương", assist: "Văn Quyết" }] },
+
+      // AFF Cup 2016
+      { tournament: "AFF CUP 2016", match: "Việt Nam 2–1 Campuchia", events: [{ scorer: "Công Vinh", assist: "Văn Toàn" }, { scorer: "Phản lưới nhà" }] },
+      { tournament: "AFF CUP 2016", match: "Việt Nam 2–1 Myanmar", events: [{ scorer: "Văn Quyết", assist: "Xuân Trường" }, { scorer: "Công Vinh", assist: "Trọng Hoàng" }] },
+      { tournament: "AFF CUP 2016", match: "Việt Nam 1–0 Malaysia", events: [{ scorer: "Trọng Hoàng", assist: "Xuân Trường" }] },
+      { tournament: "AFF CUP 2016", match: "Việt Nam 2–2 Indonesia", events: [{ scorer: "Văn Thanh", assist: "Thành Lương" }, { scorer: "Minh Tuấn", assist: "Trọng Hoàng" }] },
+
+      // Giao hữu 2017
+      { tournament: "GIAO HỮU 2017", match: "Việt Nam 1–1 Đài Loan", events: [{ scorer: "Công Phượng" }] },
+
+      // VL Asian Cup 2019
+      { tournament: "VL ASIAN CUP 2019", match: "Việt Nam 1–1 Afganistan", events: [{ scorer: "Văn Toàn" }] },
+      { tournament: "VL ASIAN CUP 2019", match: "Việt Nam 2–1 Campuchia", events: [{ scorer: "Văn Quyết", assist: "Trọng Hoàng" }, { scorer: "Quang Hải", assist: "Âu Văn Hoàn" }] },
+      { tournament: "VL ASIAN CUP 2019", match: "Việt Nam 5–0 Campuchia", events: [{ scorer: "Thanh Trung", assist: "Văn Quyết" }, { scorer: "Văn Quyết", assist: "Thanh Trung" }, { scorer: "Anh Đức", assist: "Thanh Trung" }, { scorer: "Công Phượng", assist: "Văn Quyết" }, { scorer: "Hồng Quân", assist: "Văn Hậu" }] },
+      { tournament: "VL ASIAN CUP 2019", match: "Việt Nam 1–1 Jordan", events: [{ scorer: "Anh Đức", assist: "Xuân Mạnh" }] },
+
+      // AFF Cup 2018
+      { tournament: "AFF CUP 2018", match: "Việt Nam 3–0 Lào", events: [{ scorer: "Công Phượng", assist: "Anh Đức" }, { scorer: "Anh Đức" }, { scorer: "Quang Hải" }] },
+      { tournament: "AFF CUP 2018", match: "Việt Nam 2–0 Malaysia", events: [{ scorer: "Công Phượng", assist: "Anh Đức" }, { scorer: "Anh Đức", assist: "Văn Đức" }] },
+      { tournament: "AFF CUP 2018", match: "Việt Nam 3–0 Campuchia", events: [{ scorer: "Tiến Linh", assist: "Trọng Hoàng" }, { scorer: "Quang Hải", assist: "Hồng Duy" }, { scorer: "Văn Đức", assist: "Quang Hải" }] },
+      { tournament: "AFF CUP 2018", match: "Việt Nam 2–1 Philippines", events: [{ scorer: "Anh Đức", assist: "Văn Hậu" }, { scorer: "Văn Đức", assist: "Trọng Hoàng" }] },
+      { tournament: "AFF CUP 2018", match: "Việt Nam 2–1 Philippines", events: [{ scorer: "Quang Hải", assist: "Văn Đức" }, { scorer: "Công Phượng" }] },
+      { tournament: "AFF CUP 2018", match: "Việt Nam 1–0 Malaysia", events: [{ scorer: "Anh Đức", assist: "Quang Hải" }] },
+
+      // Giao hữu 2018
+      { tournament: "GIAO HỮU 2018", match: "Việt Nam 1–1 Triều Tiên", events: [{ scorer: "Tiến Linh", assist: "Công Phượng" }] },
+
+      // Asian Cup 2019
+      { tournament: "ASIAN CUP 2019", match: "Việt Nam 2–3 Iraq", events: [{ scorer: "Phản lưới nhà" }, { scorer: "Công Phượng" }] },
+      { tournament: "ASIAN CUP 2019", match: "Việt Nam 2–0 Yemen", events: [{ scorer: "Hải Quế", note: "P" }, { scorer: "Quang Hải" }] },
+      { tournament: "ASIAN CUP 2019", match: "Việt Nam 1–1 Jordan", events: [{ scorer: "Công Phượng", assist: "Trọng Hoàng" }] },
+
+      // King Cup 2019
+      { tournament: "KING CUP 2019", match: "Việt Nam 1–0 Thái Lan", events: [{ scorer: "Anh Đức", assist: "Xuân Trường" }] },
+      { tournament: "KING CUP 2019", match: "Việt Nam 1–1 Curacao", events: [{ scorer: "Đức Huy", assist: "Văn Kiên" }] },
+
+      // VL 2 World Cup 2022
+      { tournament: "VL 2 WORLD CUP 2022", match: "Việt Nam 1–0 Malaysia", events: [{ scorer: "Quang Hải", assist: "Hải Quế" }] },
+      { tournament: "VL 2 WORLD CUP 2022", match: "Việt Nam 3–1 Indonesia", events: [{ scorer: "Duy Mạnh" }, { scorer: "Ngọc Hải", note: "P" }, { scorer: "Tiến Linh", assist: "Trọng Hoàng" }] },
+      { tournament: "VL 2 WORLD CUP 2022", match: "Việt Nam 1–0 UAE", events: [{ scorer: "Tiến Linh", assist: "Hùng Dũng" }] },
+      { tournament: "VL 2 WORLD CUP 2022", match: "Việt Nam 4–0 Indonesia", events: [{ scorer: "Tiến Linh" }, { scorer: "Quang Hải", assist: "Hồng Duy" }, { scorer: "Công Phượng", assist: "Tiến Linh" }, { scorer: "Văn Thanh", assist: "Xuân Trường" }] },
+      { tournament: "VL 2 WORLD CUP 2022", match: "Việt Nam 2–1 Malaysia", events: [{ scorer: "Tiến Linh", assist: "Văn Hậu" }, { scorer: "Hải Quế", note: "P" }] },
+      { tournament: "VL 2 WORLD CUP 2022", match: "Việt Nam 2–3 UAE", events: [{ scorer: "Tiến Linh", assist: "Minh Vương" }, { scorer: "Minh Vương", assist: "Đức Huy" }] },
+
+      // AFF Cup 2021
+      { tournament: "AFF CUP 2021", match: "Việt Nam 2–0 Lào", events: [{ scorer: "Công Phượng", assist: "Hồng Duy" }, { scorer: "Văn Đức", assist: "Tấn Tài" }] },
+      { tournament: "AFF CUP 2021", match: "Việt Nam 3–0 Malaysia", events: [{ scorer: "Quang Hải", assist: "Tuấn Anh" }, { scorer: "Công Phượng", assist: "Quang Hải" }, { scorer: "Hoàng Đức", assist: "Tuấn Anh" }] },
+      { tournament: "AFF CUP 2021", match: "Việt Nam 4–0 Campuchia", events: [{ scorer: "Tiến Linh", assist: "Quang Hải" }, { scorer: "Tiến Linh", assist: "Hoàng Đức" }, { scorer: "Tiến Dũng", assist: "Tấn Tài" }, { scorer: "Quang Hải", assist: "Hoàng Đức" }] },
+
+      // VL 3 World Cup 2022
+      { tournament: "VL 3 WORLD CUP 2022", match: "Việt Nam 1–3 Saudi Arabia", events: [{ scorer: "Quang Hải" }] },
+      { tournament: "VL 3 WORLD CUP 2022", match: "Việt Nam 2–3 Trung Quốc", events: [{ scorer: "Tấn Tài", assist: "Hoàng Đức" }, { scorer: "Tiến Linh", assist: "Quang Hải" }] },
+      { tournament: "VL 3 WORLD CUP 2022", match: "Việt Nam 3–1 Trung Quốc", events: [{ scorer: "Tấn Tài", assist: "Hùng Dũng" }, { scorer: "Tiến Linh", assist: "Hùng Dũng" }, { scorer: "Văn Đức", assist: "Hoàng Đức" }] },
+      { tournament: "VL 3 WORLD CUP 2022", match: "Việt Nam 1–1 Nhật Bản", events: [{ scorer: "Thanh Bình", assist: "Công Phượng" }] },
+
+      // Giao hữu 2022
+      { tournament: "GIAO HỮU 2022", match: "Việt Nam 2–0 Afganistan", events: [{ scorer: "Tuấn Hải", assist: "Adriano Schmitd" }, { scorer: "Tuấn Hải", assist: "Tấn Tài" }] },
+      { tournament: "GIAO HỮU 2022", match: "Việt Nam 4–0 Singapore", events: [{ scorer: "Văn Quyết" }, { scorer: "Thanh Nhân" }, { scorer: "Tấn Tài", assist: "Văn Đức" }, { scorer: "Khang Khuất" }] },
+      { tournament: "GIAO HỮU 2022", match: "Việt Nam 3–0 Ấn Độ", events: [{ scorer: "Văn Đức" }, { scorer: "Văn Toàn", assist: "Hùng Dũng" }, { scorer: "Văn Quyết" }] },
+      { tournament: "GIAO HỮU 2022", match: "Việt Nam 1–0 Philippines", events: [{ scorer: "Văn Quyết", assist: "Hải Huy" }] },
+
+      // AFF Cup 2022
+      { tournament: "AFF CUP 2022", match: "Việt Nam 6–0 Lào", events: [{ scorer: "Tiến Linh", assist: "Văn Hậu" }, { scorer: "Hùng Dũng" }, { scorer: "Tấn Tài", assist: "Thành Chung" }, { scorer: "Văn Hậu", assist: "Hoàng Đức" }, { scorer: "Văn Toàn", assist: "Tuấn Hải" }, { scorer: "Văn Thanh", assist: "Tuấn Anh" }] },
+      { tournament: "AFF CUP 2022", match: "Việt Nam 3–0 Malaysia", events: [{ scorer: "Tiến Linh", assist: "Hùng Dũng" }, { scorer: "Hải Quế", note: "P" }, { scorer: "Hoàng Đức", assist: "Quang Hải" }] },
+      { tournament: "AFF CUP 2022", match: "Việt Nam 3–0 Myanmar", events: [{ scorer: "Phản lưới nhà" }, { scorer: "Tiến Linh" }, { scorer: "Ngọc Quang", assist: "Hoàng Đức" }] },
+      { tournament: "AFF CUP 2022", match: "Việt Nam 2–0 Indonesia", events: [{ scorer: "Tiến Linh", assist: "Hùng Dũng" }, { scorer: "Tiến Linh", assist: "Hùng Dũng" }] },
+      { tournament: "AFF CUP 2022", match: "Việt Nam 2–2 Thái Lan", events: [{ scorer: "Tiến Linh", assist: "Hải Quế" }, { scorer: "Văn Thanh", assist: "Thanh Bình" }] },
+
+      // Giao hữu 2023
+      { tournament: "GIAO HỮU 2023", match: "Việt Nam 1–0 Hong Kong", events: [{ scorer: "Hải Quế", note: "P" }] },
+      { tournament: "GIAO HỮU 2023", match: "Việt Nam 1–0 Syria", events: [{ scorer: "Tuấn Hải", assist: "Thái Sơn" }] },
+      { tournament: "GIAO HỮU 2023", match: "Việt Nam 2–0 Palestine", events: [{ scorer: "Công Phượng", assist: "Hoàng Đức" }, { scorer: "Tuấn Hải", assist: "Văn Toàn" }] },
+
+      // VL 2 World Cup 2026
+      { tournament: "VL 2 WORLD CUP 2026", match: "Việt Nam 2–0 Philippines", events: [{ scorer: "Văn Toàn" }, { scorer: "Đình Bắc", assist: "Văn Tùng" }] },
+      { tournament: "VL 2 WORLD CUP 2026", match: "Việt Nam 3–2 Philippines", events: [{ scorer: "Tiến Linh", assist: "Văn Toàn" }, { scorer: "Tiến Linh", assist: "Tuấn Tài" }, { scorer: "Tuấn Hải" }] },
+      { tournament: "VL 2 WORLD CUP 2026", match: "Việt Nam 1–3 Iraq", events: [{ scorer: "Tuấn Hải" }] },
+
+      // Asian Cup 2023
+      { tournament: "ASIAN CUP 2023", match: "Việt Nam 2–4 Nhật Bản", events: [{ scorer: "Đình Bắc", assist: "Hùng Dũng" }, { scorer: "Tuấn Hải" }] },
+      { tournament: "ASIAN CUP 2023", match: "Việt Nam 2–3 Iraq", events: [{ scorer: "Việt Anh", assist: "Văn Khang" }, { scorer: "Quang Hải", assist: "Thanh Bình" }] },
+
+      // Giao hữu 2024
+      { tournament: "GIAO HỮU 2024", match: "Việt Nam 1–2 Thái Lan", events: [{ scorer: "Tiến Linh", assist: "Hải Quế" }] },
+      { tournament: "GIAO HỮU 2024", match: "Việt Nam 1–1 Ấn Độ", events: [{ scorer: "Vĩ Hào", assist: "Hải Quế" }] },
+
+      // AFF Cup 2024
+      { tournament: "AFF CUP 2024", match: "Việt Nam 4–1 Lào", events: [{ scorer: "Hai Long", assist: "Tiến Dũng" }, { scorer: "Tiến Linh", assist: "Quang Hải" }, { scorer: "Văn Toàn", assist: "Quang Hải" }, { scorer: "Văn Vĩ" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 1–0 Indonesia", events: [{ scorer: "Quang Hải", assist: "Tiến Linh" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 1–1 Philippines", events: [{ scorer: "Ngọc Tân" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 5–0 Myanmar", events: [{ scorer: "Vĩ Hào", assist: "Xuân Son" }, { scorer: "Xuân Son", assist: "Vĩ Hào" }, { scorer: "Quang Hải", assist: "Tấn Tài" }, { scorer: "Xuân Son", assist: "Tiến Linh" }, { scorer: "Tiến Linh", assist: "Xuân Son" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 2–0 Singapore", events: [{ scorer: "Tiến Linh", note: "P" }, { scorer: "Xuân Son", assist: "Xuân Mạnh" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 3–1 Singapore", events: [{ scorer: "Xuân Son", note: "P" }, { scorer: "Xuân Son" }, { scorer: "Tiến Linh", note: "P" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 2–1 Thái Lan", events: [{ scorer: "Xuân Son", assist: "Văn Thanh" }, { scorer: "Xuân Son" }] },
+      { tournament: "AFF CUP 2024", match: "Việt Nam 3–2 Thái Lan", events: [{ scorer: "Tuấn Hải", assist: "Xuân Mạnh" }, , { scorer: "Phản lưới nhà" }, { scorer: "Hai Long" }] },
+
+      // Giao hữu 2025
+      { tournament: "GIAO HỮU 2025", match: "Việt Nam 2–1 Campuchia", events: [{ scorer: "Hai Long" }, { scorer: "Văn Vĩ" }] },
+
+      // VL Asian Cup 2027
+      { tournament: "VL ASIAN CUP 2027", match: "Việt Nam 5–0 Lào", events: [{ scorer: "Ngọc Quang" }, { scorer: "Văn Vĩ" }, { scorer: "Văn Vĩ" }, { scorer: "Hai Long", assist: "Quang Hải" }, { scorer: "Quang Hải", assist: "Hoàng Đức" }] },
+      { tournament: "VL ASIAN CUP 2027", match: "Việt Nam 3–1 Nepal", events: [{ scorer: "Tiến Linh", assist: "Tiến Anh" }, { scorer: "Xuân Mạnh" }, { scorer: "Văn Vĩ" }] },
+      { tournament: "VL ASIAN CUP 2027", match: "Việt Nam 2–0 Lào", events: [{ scorer: "Xuân Son", note: "P" }, { scorer: "Tuấn Hải" }] },
+      { tournament: "VL ASIAN CUP 2027", match: "Việt Nam 3–1 Malaysia", events: [{ scorer: "Duy Mạnh", assist: "Tiến Anh" }, { scorer: "Xuân Son", assist: "Hoàng Hên" }, { scorer: "Xuân Son", assist: "Tiến Anh" }] },
+
+      // Giao hữu 2026
+      { tournament: "GIAO HỮU 2026", match: "Việt Nam 3–0 Bangladesh", events: [{ scorer: "Tuấn Hải", assist: "Tiến Anh" }, { scorer: "Xuân Mạnh", assist: "Quang Hải" }, { scorer: "Hai Long" }] },
+      { tournament: "GIAO HỮU 2026", match: "Việt Nam 4–0 Myanmar", events: [{ scorer: "Xuân Son", assist: "Tài Lộc" }, { scorer: "Xuân Mạnh", assist: "Tiến Anh" }, { scorer: "Hoàng Hên", assist: "Tiến Anh" }, { scorer: "Đình Bắc", note: "P" }] },
+
+      // ASEAN Cup 2026
+      { tournament: "ASEAN CUP 2026", match: "Việt Nam 7–0 Timor Leste", events: [{ scorer: "Hoàng Hên" }, { scorer: "Đình Bắc", assist: "Hoàng Đức" }, { scorer: "Hoàng Hên" }, { scorer: "Đình Bắc", assist: "Quang Hải" }, { scorer: "Xuân Son", assist: "Văn Vĩ" }, { scorer: "Đình Bắc", assist: "Việt Anh" }, { scorer: "Quang Hải", assist: "Đình Bắc" }] },
+      { tournament: "ASEAN CUP 2026", match: "Việt Nam 3–0 Indonesia", events: [{ scorer: "Văn Vĩ", assist: "Hoàng Đức" }, { scorer: "Hai Long", assist: "Thành Long" }, { scorer: "Xuân Son", assist: "Hoàng Đức" }] },
+      { tournament: "ASEAN CUP 2026", match: "Việt Nam 3–1 Campuchia", events: [{ scorer: "Đình Bắc", assist: "Hoàng Đức" }, { scorer: "Phản lưới nhà" }, { scorer: "Đình Bắc", assist: "Thành Long" }] },
+      { tournament: "ASEAN CUP 2026", match: "Việt Nam 2-0 Malaysia", events: [{ scorer: "Xuân Son", assist: "Tiến Anh" }, { scorer: "Phản lưới nhà" }] },
+      { tournament: "ASEAN CUP 2026", match: "Việt Nam 2-0 Malaysia", events: [{ scorer: "Xuân Son"}, { scorer: "Xuân Son", assist: "Đình Bắc" }] },
+      { tournament: "ASEAN CUP 2026", match: "Việt Nam 2-0 Thái Lan", events: [{ scorer: "Hai Long", assist: "Đình Bắc"}, { scorer: "Quang Hải", assist: "Hoàng Hên" }] },
+      
+      //FIFA ASEAN CUP 2026
+       { tournament: "FIFA ASEAN CUP 2026", match: "Việt Nam 1-0 Philipienes", events: [{ scorer: "Đình Bắc"}] },
+       { tournament: "FIFA ASEAN CUP 2026", match: "Việt Nam 4-2 Pakistan", events: [{ scorer: "Hai Long", assist: "Tuấn Tài"}, { scorer: "Hoàng Đức", assist: "Đình Bắc" }, { scorer:"Đình Bắc", assist:"Tuấn Tài"}, { scorer: "William Minh Hoàng", assist: "Đình Bắc"}] }
+    ];
+
+    // CẤU HÌNH SẮP XẾP BẢNG CẦU THỦ
+    let currentSortColumn = 'g'; // Mặc định sắp xếp theo Bàn thắng
+    let currentSortDir = 'desc'; // Mặc định Giảm dần (desc)
+
+    function getRankBadge(index) {
+      if (index === 0) return `<span class="w-5 h-5 inline-flex items-center justify-center bg-yellow-400 text-yellow-950 font-bold rounded-full text-[10px]">1</span>`;
+      if (index === 1) return `<span class="w-5 h-5 inline-flex items-center justify-center bg-slate-300 text-slate-800 font-bold rounded-full text-[10px]">2</span>`;
+      if (index === 2) return `<span class="w-5 h-5 inline-flex items-center justify-center bg-amber-600 text-white font-bold rounded-full text-[10px]">3</span>`;
+      return `<span class="text-slate-400 font-medium pl-1">${index + 1}</span>`;
+    }
+
+    // Render các Bảng Top 10
+    function renderTop10Tables() {
+      const listCombined = [...rawData].sort((a, b) => (b.g + b.a) - (a.g + a.a) || b.g - a.g || a.m - b.m).slice(0, 10);
+      document.getElementById('topCombinedBody').innerHTML = listCombined.map((p, i) => `
+        <tr class="hover:bg-slate-50 py-1.5">
+          <td class="py-2">${getRankBadge(i)}</td>
+          <td class="font-semibold text-slate-800">${p.name}</td>
+          <td class="text-center font-medium">${p.g}</td>
+          <td class="text-center font-medium">${p.a}</td>
+          <td class="text-center text-slate-500">${p.m}</td>
+          <td class="text-right font-bold text-red-600">${p.g + p.a}</td>
+        </tr>
+      `).join('');
+
+      const listRanked = [...rawData].sort((a, b) => b.g - a.g || b.a - a.a || a.m - b.m).slice(0, 10);
+      document.getElementById('topRankedBody').innerHTML = listRanked.map((p, i) => `
+        <tr class="hover:bg-slate-50 py-1.5">
+          <td class="py-2">${getRankBadge(i)}</td>
+          <td class="font-semibold text-slate-800">${p.name}</td>
+          <td class="text-center font-bold text-emerald-600">${p.g}</td>
+          <td class="text-center font-medium">${p.a}</td>
+          <td class="text-right text-slate-500">${p.m}</td>
+        </tr>
+      `).join('');
+
+      const listAssists = [...rawData].sort((a, b) => b.a - a.a || a.m - b.m || b.g - a.g).slice(0, 10);
+      document.getElementById('topAssistsBody').innerHTML = listAssists.map((p, i) => `
+        <tr class="hover:bg-slate-50 py-1.5">
+          <td class="py-2">${getRankBadge(i)}</td>
+          <td class="font-semibold text-slate-800">${p.name}</td>
+          <td class="text-center font-bold text-blue-600">${p.a}</td>
+          <td class="text-right text-slate-500">${p.m}</td>
+        </tr>
+      `).join('');
+
+      const listMatches = [...rawData].sort((a, b) => b.m - a.m || b.g - a.g || b.a - a.a).slice(0, 10);
+      document.getElementById('topMatchesBody').innerHTML = listMatches.map((p, i) => `
+        <tr class="hover:bg-slate-50 py-1.5">
+          <td class="py-2">${getRankBadge(i)}</td>
+          <td class="font-semibold text-slate-800">${p.name}</td>
+          <td class="text-center font-bold text-purple-600">${p.m}</td>
+          <td class="text-center font-medium">${p.g}</td>
+          <td class="text-right font-medium">${p.a}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Xử lý sự kiện click Tiêu đề Cột để sắp xếp
+    function sortTable(columnKey) {
+      if (currentSortColumn === columnKey) {
+        currentSortDir = currentSortDir === 'desc' ? 'asc' : 'desc';
+      } else {
+        currentSortColumn = columnKey;
+        currentSortDir = 'desc';
+      }
+      filterPlayers();
+    }
+
+    // Cập nhật icon mũi tên sắp xếp trên tiêu đề cột
+    function updateSortIcons() {
+      const columns = ['name', 'g', 'a', 'm', 'total'];
+      columns.forEach(col => {
+        const icon = document.getElementById(`sort-icon-${col}`);
+        if (icon) {
+          if (col === currentSortColumn) {
+            icon.className = `fa-solid fa-sort-${currentSortDir === 'asc' ? 'up' : 'down'} ml-1 text-red-600`;
+          } else {
+            icon.className = 'fa-solid fa-sort ml-1 text-slate-400';
+          }
+        }
+      });
+    }
+
+    // Render Bảng đầy đủ Cầu thủ
+    function renderFullList(sortedData) {
+      document.getElementById('displayCount').innerText = sortedData.length;
+
+      document.getElementById('fullListBody').innerHTML = sortedData.map((p, i) => {
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 text-center">${getRankBadge(i)}</td>
+            <td class="py-3 px-4 font-bold text-slate-800">${p.name}</td>
+            <td class="py-3 px-4 text-center font-semibold text-amber-600 bg-amber-50/30">${p.g}</td>
+            <td class="py-3 px-4 text-center font-semibold text-blue-600 bg-blue-50/30">${p.a}</td>
+            <td class="py-3 px-4 text-center text-slate-600">${p.m}</td>
+            <td class="py-3 px-4 text-center font-black text-red-600 bg-red-50/40">${p.g + p.a}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Lọc & Sắp xếp Cầu thủ
+    function filterPlayers() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
+      let filtered = rawData.filter(p => p.name.toLowerCase().includes(keyword));
+
+      filtered.sort((a, b) => {
+        let valA, valB;
+        if (currentSortColumn === 'total') {
+          valA = a.g + a.a;
+          valB = b.g + b.a;
+        } else {
+          valA = a[currentSortColumn];
+          valB = b[currentSortColumn];
+        }
+
+        if (typeof valA === 'string') {
+          return currentSortDir === 'asc' 
+            ? valA.localeCompare(valB, 'vi') 
+            : valB.localeCompare(valA, 'vi');
+        }
+
+        if (valA !== valB) {
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        }
+
+        return b.g - a.g || b.a - a.a || a.m - b.m;
+      });
+
+      renderFullList(filtered);
+      updateSortIcons();
+    }
+
+    // Render danh sách Trận Đấu
+    function renderMatches(data = matchData) {
+      document.getElementById('matchCountBadge').innerText = `${data.length} trận`;
+      const container = document.getElementById('matchListContainer');
+
+      if (data.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl text-center text-slate-400 font-medium">Không tìm thấy trận đấu nào phù hợp.</div>`;
+        return;
+      }
+
+      container.innerHTML = data.map(m => `
+        <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200/80 space-y-3 hover:shadow-md transition-shadow">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+            <span class="bg-red-50 text-red-600 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide border border-red-100">
+              ${m.tournament}
+            </span>
+            <span class="font-extrabold text-slate-900 text-base md:text-lg tracking-tight">
+              ${m.match}
+            </span>
+          </div>
+
+          <div class="space-y-1.5 pl-1">
+            ${m.events.map(e => `
+              <div class="flex items-center gap-2.5 text-sm text-slate-800">
+                <i class="fa-solid fa-futbol text-red-600 text-xs"></i>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="font-extrabold text-slate-900">${e.scorer}</span>
+                  ${e.assist ? `<span class="text-slate-400 font-normal text-xs">(Kiến tạo: ${e.assist})</span>` : ''}
+                  ${e.note ? `<span class="text-slate-400 font-normal text-xs">(${e.note})</span>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function populateTournamentDropdown() {
+      const select = document.getElementById('tournamentSelect');
+      const tourneys = [...new Set(matchData.map(m => m.tournament))];
+      tourneys.forEach(t => {
+        const option = document.createElement('option');
+        option.value = t;
+        option.textContent = t;
+        select.appendChild(option);
+      });
+    }
+
+    function filterMatches() {
+      const selectedTourney = document.getElementById('tournamentSelect').value;
+      const keyword = document.getElementById('matchSearchInput').value.toLowerCase().trim();
+
+      const filtered = matchData.filter(m => {
+        const matchTourney = selectedTourney === "" || m.tournament === selectedTourney;
+        const matchKeyword = keyword === "" || 
+                             m.tournament.toLowerCase().includes(keyword) || 
+                             m.match.toLowerCase().includes(keyword) ||
+                             m.events.some(e => e.scorer.toLowerCase().includes(keyword) || (e.assist && e.assist.toLowerCase().includes(keyword)));
+        return matchTourney && matchKeyword;
+      });
+
+      renderMatches(filtered);
+    }
+
+    function calculateStats() {
+      const totalGoals = rawData.reduce((sum, p) => sum + p.g, 0);
+      const totalAssists = rawData.reduce((sum, p) => sum + p.a, 0);
+      document.getElementById('statTotalGoals').innerText = totalGoals;
+      document.getElementById('statTotalAssists').innerText = totalAssists;
+    }
+
+    // Khởi chạy ứng dụng
+    window.onload = () => {
+      calculateStats();
+      renderTop10Tables();
+      filterPlayers();
+      populateTournamentDropdown();
+      renderMatches();
+    };
+  </script>
+</body>
+</html>
